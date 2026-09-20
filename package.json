@@ -6,7 +6,10 @@
     "dev:web": "pnpm --filter web dev",
     "dev:api": "go run -C services/api .",
     "build": "pnpm --filter web build",
-    "lint": "pnpm --filter web lint"
+    "lint": "pnpm --filter web lint",
+    "db:migrate": "./scripts/goose.sh up",
+    "db:status": "./scripts/goose.sh status",
+    "db:down": "./scripts/goose.sh down"
   },
   "devDependencies": {
     "concurrently": "^10.0.5"
