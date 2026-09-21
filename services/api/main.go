@@ -5,9 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mwritter/giftswap/services/api/internal/auth"
+	"github.com/mwritter/giftswap/services/api/internal/server"
 )
 
 func main() {
@@ -22,32 +25,53 @@ func main() {
 	}
 	defer pool.Close()
 
-	r := chi.NewRouter()
-
-	r.Route("/api", func(r chi.Router) {
-		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"status":"ok"}`))
-		})
-
-		r.Get("/ready", func(w http.ResponseWriter, r *http.Request) {
-			w.Header().Set("Content-Type", "application/json")
-
-			if err := pool.Ping(r.Context()); err != nil {
-				log.Printf("database ping failed: %v", err)
-				w.WriteHeader(http.StatusServiceUnavailable)
-				w.Write([]byte(`{"status":"not_ready"}`))
-				return
-			}
-
-			w.Write([]byte(`{"status":"ok"}`))
-		})
+	authService := auth.NewService(pool, auth.LogMailer{}, auth.Config{
+		BaseURL:      envOr("APP_BASE_URL", "http://localhost:3000"),
+		MagicLinkTTL: durationOr("MAGIC_LINK_TTL", 15*time.Minute),
+		SessionTTL:   durationOr("SESSION_TTL", 30*24*time.Hour),
+		CookieSecure: boolOr("COOKIE_SECURE", false),
 	})
 
-	port := ":8080"
+	handler := server.New(pool, authService)
+
+	port := envOr("PORT", "8080")
+	if port[0] != ':' {
+		port = ":" + port
+	}
 	log.Printf("Server starting on port %s...", port)
 
-	if err := http.ListenAndServe(port, r); err != nil {
+	if err := http.ListenAndServe(port, handler); err != nil {
 		log.Fatalf("Could not start server: %s\n", err)
 	}
+}
+
+func envOr(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
+
+func durationOr(key string, fallback time.Duration) time.Duration {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	d, err := time.ParseDuration(v)
+	if err != nil {
+		log.Fatalf("invalid %s: %v", key, err)
+	}
+	return d
+}
+
+func boolOr(key string, fallback bool) bool {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	b, err := strconv.ParseBool(v)
+	if err != nil {
+		log.Fatalf("invalid %s: %v", key, err)
+	}
+	return b
 }
