@@ -49,7 +49,7 @@ func (s *Server) authCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.setSessionCookie(w, sessionRaw, expiresAt)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, s.auth.EntryURL(), http.StatusSeeOther)
 }
 
 func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
