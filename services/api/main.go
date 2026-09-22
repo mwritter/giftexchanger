@@ -27,6 +27,7 @@ func main() {
 	authService := auth.NewService(pool, auth.LogMailer{}, auth.Config{
 		BaseURL:      envOr("APP_BASE_URL", "http://localhost:3000"),
 		EntryURL:     envOr("APP_ENTRY_URL", "http://localhost:3000/dashboard"),
+		ErrorURL:     envOr("APP_ERROR_URL", "http://localhost:3000/auth/error"),
 		MagicLinkTTL: durationOr("MAGIC_LINK_TTL", 15*time.Minute),
 		SessionTTL:   durationOr("SESSION_TTL", 30*24*time.Hour),
 		CookieSecure: boolOr("COOKIE_SECURE", false),

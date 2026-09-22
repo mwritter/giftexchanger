@@ -21,6 +21,7 @@ var (
 type Config struct {
 	BaseURL      string
 	EntryURL     string
+	ErrorURL     string
 	MagicLinkTTL time.Duration
 	SessionTTL   time.Duration
 	CookieSecure bool
@@ -33,6 +34,9 @@ func (c Config) withDefaults() Config {
 	}
 	if c.EntryURL == "" {
 		c.EntryURL = strings.TrimRight(c.BaseURL, "/") + "/dashboard"
+	}
+	if c.ErrorURL == "" {
+		c.ErrorURL = strings.TrimRight(c.BaseURL, "/") + "/auth/error"
 	}
 	if c.MagicLinkTTL == 0 {
 		c.MagicLinkTTL = 15 * time.Minute
@@ -64,6 +68,7 @@ func NewService(pool *pgxpool.Pool, mailer Mailer, cfg Config) *Service {
 
 func (s *Service) CookieName() string        { return s.cfg.CookieName }
 func (s *Service) EntryURL() string          { return s.cfg.EntryURL }
+func (s *Service) ErrorURL() string          { return s.cfg.ErrorURL }
 func (s *Service) CookieSecure() bool        { return s.cfg.CookieSecure }
 func (s *Service) SessionTTL() time.Duration { return s.cfg.SessionTTL }
 

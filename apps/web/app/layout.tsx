@@ -19,14 +19,17 @@ export const metadata: Metadata = {
   description: "Self-hostable Secret Santa for friends, families, and small groups.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, login }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className={`${geistSans.className} min-h-full flex flex-col`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          {login}
+        </Providers>
       </body>
     </html>
   );

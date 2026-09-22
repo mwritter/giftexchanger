@@ -9,10 +9,9 @@ export function LogoutButton() {
     const router = useRouter()
 
     const signOut = useMutation({
-        mutationFn: () => logout(),
+        mutationFn: logout,
         onSuccess: () => {
-            router.replace("/login")
-            router.refresh()
+            router.replace("/")
         }
     })
 

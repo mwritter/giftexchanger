@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/mwritter/giftswap/services/api/internal/auth"
@@ -39,12 +40,12 @@ func (s *Server) authCallback(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	sessionRaw, expiresAt, err := s.auth.ConsumeMagicLink(r.Context(), token)
 	if errors.Is(err, auth.ErrInvalidToken) {
-		writeError(w, http.StatusBadRequest, "invalid or expired magic link")
+		s.redirectToError(w, r, "invalid_link")
 		return
 	}
 	if err != nil {
 		log.Printf("consume magic link: %v", err)
-		writeError(w, http.StatusInternalServerError, "could not complete login")
+		s.redirectToError(w, r, "unexpected")
 		return
 	}
 
@@ -99,6 +100,23 @@ func (s *Server) requireAuth(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r.WithContext(WithUser(r.Context(), user)))
 	})
+}
+
+// The callback is opened from an email, so failures belong on a page the person
+// can read, not in a JSON body.
+func (s *Server) redirectToError(w http.ResponseWriter, r *http.Request, reason string) {
+	target, err := url.Parse(s.auth.ErrorURL())
+	if err != nil {
+		log.Printf("parse error url %q: %v", s.auth.ErrorURL(), err)
+		writeError(w, http.StatusInternalServerError, "could not complete login")
+		return
+	}
+
+	query := target.Query()
+	query.Set("reason", reason)
+	target.RawQuery = query.Encode()
+
+	http.Redirect(w, r, target.String(), http.StatusSeeOther)
 }
 
 func (s *Server) setSessionCookie(w http.ResponseWriter, raw string, expires time.Time) {
