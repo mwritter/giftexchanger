@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	"github.com/mwritter/giftswap/services/api/internal/auth"
+	"github.com/mwritter/giftexchanger/services/api/internal/auth"
 )
 
 type userContextKey struct{}
