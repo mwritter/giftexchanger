@@ -45,7 +45,7 @@ func (c Config) withDefaults() Config {
 		c.SessionTTL = 30 * 24 * time.Hour
 	}
 	if c.CookieName == "" {
-		c.CookieName = "giftswap_session"
+		c.CookieName = "giftexchanger_session"
 	}
 	return c
 }

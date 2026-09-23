@@ -1,5 +1,5 @@
 {
-  "name": "giftswap",
+  "name": "giftexchanger",
   "private": true,
   "scripts": {
     "dev": "concurrently -n web,api -c cyan,magenta \"pnpm dev:web\" \"pnpm dev:api\"",

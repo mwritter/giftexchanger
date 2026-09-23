@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/mwritter/giftswap/services/api/internal/auth"
+	"github.com/mwritter/giftexchanger/services/api/internal/auth"
 )
 
 type magicLinkRequest struct {

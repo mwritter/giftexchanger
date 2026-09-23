@@ -1,4 +1,4 @@
-# GiftSwap
+# GiftExchanger
 
 Self-hostable Secret Santa for friends, families, and small groups.
 
@@ -13,5 +13,5 @@ Create an exchange, invite people with a link, collect wishlists, and assign gif
 
 ## Status
 
-GiftSwap is in early development. Local setup and a public demo are coming.
+GiftExchanger is in early development. Local setup and a public demo are coming.
 

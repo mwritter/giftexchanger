@@ -1,4 +1,4 @@
-module github.com/mwritter/giftswap/services/api
+module github.com/mwritter/giftexchanger/services/api
 
 go 1.25.0
 

@@ -4,7 +4,7 @@ export type User = {
   display_name: string
 }
 
-export const SESSION_COOKIE_NAME = "giftswap_session"
+export const SESSION_COOKIE_NAME = "giftexchanger_session"
 
 async function errorMessage(response: Response, fallback: string) {
   const data = (await response.json().catch(() => null)) as {
